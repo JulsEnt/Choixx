@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="Song2Choir Pro turns your uploaded audio into a choir-style studio render using a cloud audio backend." />
+  <title>Song2Choir Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <header class="header">
+    <nav class="shell nav" aria-label="Main navigation">
+      <a href="#top" class="brand" aria-label="Song2Choir Pro home">
+        <span class="brand-badge">S2C</span>
+        <span><strong>Song2Choir Pro</strong><small>cloud choir renderer</small></span>
+      </a>
+      <div class="nav-actions">
+        <a href="#studio">Studio</a>
+        <a href="#deploy">Deploy</a>
+        <a href="#legal">Legal</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <div class="hero-copy">
+        <p class="eyebrow">All-in-one Render deployment</p>
+        <h1>Convert your song into a choir-style studio version.</h1>
+        <p class="lead">Upload your audio, select a choir style, and render a WAV through one Render app that serves both the website and the audio engine.</p>
+        <div class="hero-buttons">
+          <a href="#studio" class="button primary">Open Studio</a>
+          <a href="#deploy" class="button secondary">Deploy Guide</a>
+        </div>
+      </div>
+      <aside class="hero-panel">
+        <div class="meter" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <h2>Real server-side rendering</h2>
+        <p>This version is not just browser effects. It connects to a Python backend that analyzes the song and builds choir-style harmony layers.</p>
+        <div class="mini-grid">
+          <span>Key estimate</span><span>Tempo estimate</span><span>Harmony stack</span><span>WAV export</span>
+        </div>
+      </aside>
+    </section>
+
+    <section id="studio" class="studio shell">
+      <div class="section-head">
+        <p class="eyebrow">Studio</p>
+        <h2>Render a choir version</h2>
+        <p>Use songs you own or have permission to adapt. Everything runs from this Render app: the studio page and the audio rendering API.</p>
+      </div>
+
+      <div class="studio-grid">
+        <form id="renderForm" class="card controls">
+          <label class="field wide api-field">
+            <span>Render App URL</span>
+            <input id="apiUrl" type="url" placeholder="Same as this website" autocomplete="url" />
+            <small>Auto-connected. The frontend and backend are served from the same Render URL.</small>
+          </label>
+
+          <label class="upload" for="audioFile">
+            <input id="audioFile" type="file" accept="audio/*" />
+            <span class="upload-icon">♫</span>
+            <strong id="uploadTitle">Click to upload audio</strong>
+            <small id="uploadMeta">MP3, WAV, M4A, OGG, FLAC or WEBM. Max depends on backend settings.</small>
+          </label>
+
+          <div class="field-row">
+            <label class="field">
+              <span>Choir Style</span>
+              <select id="style">
+                <option value="gospel">Gospel Hall</option>
+                <option value="cathedral">Cathedral Choir</option>
+                <option value="cinematic">Cinematic Choir</option>
+                <option value="acapella">Acapella Choir</option>
+                <option value="afrogospel">Afro-Gospel Choir</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Harmony</span>
+              <select id="harmony">
+                <option value="gospel_stack">Gospel Stack</option>
+                <option value="soft_triad">Soft Triad</option>
+                <option value="unison">Thick Unison</option>
+                <option value="cinematic_wide">Cinematic Wide</option>
+                <option value="cathedral_open">Cathedral Open</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="slider-field">
+            <span>Intensity <b id="intensityOut">72%</b></span>
+            <input id="intensity" type="range" min="5" max="100" value="72" />
+          </label>
+          <label class="slider-field">
+            <span>Room / Reverb <b id="roomOut">62%</b></span>
+            <input id="room" type="range" min="0" max="100" value="62" />
+          </label>
+          <label class="slider-field">
+            <span>Warmth <b id="warmthOut">58%</b></span>
+            <input id="warmth" type="range" min="0" max="100" value="58" />
+          </label>
+          <label class="slider-field">
+            <span>Keep Original Bed <b id="originalOut">28%</b></span>
+            <input id="keepOriginal" type="range" min="0" max="55" value="28" />
+          </label>
+
+          <div class="actions">
+            <button id="renderBtn" type="submit" class="button primary">Render Choir Version</button>
+            <button id="resetBtn" type="button" class="button muted">Reset</button>
+          </div>
+        </form>
+
+        <aside class="card output">
+          <div class="status-row">
+            <span id="statusBadge" class="badge">Ready</span>
+            <span id="healthBadge" class="badge ghost">Backend not checked</span>
+          </div>
+          <h3 id="statusTitle">Upload a song to start</h3>
+          <p id="statusText">After rendering, your result will appear here with a download button.</p>
+          <div class="progress"><span id="progressBar"></span></div>
+
+          <div class="players">
+            <div>
+              <strong>Original Preview</strong>
+              <audio id="originalPlayer" controls></audio>
+            </div>
+            <div>
+              <strong>Choir Result</strong>
+              <audio id="resultPlayer" controls></audio>
+            </div>
+          </div>
+
+          <div id="metaPanel" class="meta-panel" hidden>
+            <div><span>Style</span><strong id="metaStyle">—</strong></div>
+            <div><span>Tempo</span><strong id="metaTempo">—</strong></div>
+            <div><span>Key</span><strong id="metaKey">—</strong></div>
+            <div><span>Duration</span><strong id="metaDuration">—</strong></div>
+          </div>
+
+          <a id="downloadLink" class="button secondary disabled" href="#" download="song2choir-pro.wav">Download WAV</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="deploy" class="shell deploy">
+      <div class="section-head">
+        <p class="eyebrow">Deployment</p>
+        <h2>How to put it online</h2>
+      </div>
+      <div class="steps">
+        <article class="card step"><span>1</span><h3>Deploy everything on Render</h3><p>Create one Docker Web Service. Render serves the website and the Python audio API from the same public URL.</p></article>
+        <article class="card step"><span>2</span><h3>No Netlify needed</h3><p>The frontend files live inside the <code>static</code> folder and are served by FastAPI.</p></article>
+        <article class="card step"><span>3</span><h3>Open your Render URL</h3><p>Visit your <code>.onrender.com</code> link, upload audio, and render directly.</p></article>
+      </div>
+    </section>
+
+    <section id="legal" class="shell legal card">
+      <h2>Important legal note</h2>
+      <p>Only upload and transform songs you own, created yourself, licensed, or have clear permission to adapt. Do not use this to redistribute copyrighted music without permission.</p>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <span>Song2Choir Pro</span>
+    <span>Built for clean music transformation workflows.</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
