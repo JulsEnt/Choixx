@@ -1,8 +1,10 @@
 services:
   - type: web
-    name: song2choir-pro
+    name: choixx
     runtime: docker
     plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /api/health
     envVars:
       - key: MAX_UPLOAD_MB
